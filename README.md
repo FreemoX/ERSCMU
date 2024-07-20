@@ -56,6 +56,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.  
 This project is in no way affiliated with the creators of Elden Ring or the creator of the Seamless Coop mod.
 
+## Building
+Building the program yourself is a useful way of circumventing Windows Defender and antiviruses flagging ERSCMU as a virus.
+1. Download [ERSCMU.py](ERSCMU.py) and [ERSCMU logo](assets/logo.ico) into a build directory (eg. `Documents\ERSCMU`).
+2. Run `pyinstaller --onefile --noconsole --icon=logo.ico ERSCMU.py --name ERSCMU` from within the directory you placed the files in.
+3. Enjoy not being pestered by false flags
+
 ## Application Images
 ![Main Window](assets/main.png)
 ![Settings Window](assets/settings.png)

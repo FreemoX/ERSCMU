@@ -1,6 +1,5 @@
 # Define version number
 PROGRAM_VERSION = "1.7.0.6"
-LAUNCHER_VERSION = "1.1.0.0"
 
 # Define a persistent path for the configuration files in the AppData folder
 PERSISTENT_DIR = os.path.join(os.getenv('APPDATA'), 'ERSC Mod Updater')

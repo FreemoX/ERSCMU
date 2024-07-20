@@ -62,4 +62,3 @@ This project is in no way affiliated with the creators of Elden Ring or the crea
 ![Update Confirmation](assets/update_confirmation.png)
 ![Info Window](assets/info.png)
 ![About Window](assets/about.png)
-![Save Convertion Warning](assets/save_convert_warning.png)

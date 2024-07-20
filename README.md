@@ -60,7 +60,7 @@ This project is in no way affiliated with the creators of Elden Ring or the crea
 Building the program yourself is a useful way of circumventing Windows Defender and antiviruses flagging ERSCMU as a virus.
 1. Download [dynamic_launcher.py](dynamic_launcher.py) and [ERSCMU logo](assets/logo.ico) into a build directory (eg. `Documents\ERSCMU`).
 2. Check the imports in dynamic_launcher.py for dependancies, and make sure you got these installed.
-3. Run `pyinstaller --onefile --noconsole --icon=logo.ico ERSCMU.py --name ERSCMU` from within the directory you placed the files in.
+3. Run `pyinstaller --onefile --noconsole --icon=logo.ico dynamic_launcher.py --name ERSCMU` from within the directory you placed the files in.
 4. Enjoy not being pestered by false flags
 
 ## Application Images

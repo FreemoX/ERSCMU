@@ -1,0 +1,19 @@
+- 1.7.0.6
+  - Added changelog viewing functionality for ERSCMU
+- 1.7.0.5
+  - Fixed issue where the application would not have the logo embedded
+- 1.7.0.4
+  - Added basic tooltips for most fields
+  - Added advanced tooltips for mod scaling parameters, which calculates example values for up to 4 players
+  - Added basic save file generator/converter [EXPERIMENTAL]
+- 1.7.0.3
+  - Minor UI tweaks and readability of settings window
+- 1.7.0.2
+  - Finalized dynamic launcher compatibility
+- 1.7.0.1
+  - Introduction of dynamic launcher
+- 1.6.1.2
+  - Compatibility update for ERSC v1.7.9
+  - Added "Display player ping & level" as overlay option
+- 1.6.1.1
+  - Initial Git Commit of PyQt5 version

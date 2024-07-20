@@ -19,7 +19,7 @@ from PyQt5.QtCore import Qt
 LAUNCHER_VERSION = "1.1.0.1"
 
 # Define repository details
-file_url = 'https://raw.githubusercontent.com/FreemoX/ERSCMU/main/ERSCMU.py'
+file_url = 'https://github.com/FreemoX/ERSCMU/releases/latest/download/ERSCMU.py'
 cache_dir = os.path.join(os.getenv('APPDATA'), 'ERSC Mod Updater')
 cache_file = os.path.join(cache_dir, 'ERSCMU.py')
 

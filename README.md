@@ -55,3 +55,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.  
 This project is in no way affiliated with the creators of Elden Ring or the creator of the Seamless Coop mod.
+
+## Application Images
+![Main Window](assets/main.png)
+![Settings Window](assets/settings.png)
+![Update Confirmation](assets/update_confirmation.png)
+![Info Window](assets/info.png)
+![About Window](assets/about.png)
+![Save Convertion Warning](assets/save_convert_warning.png)

@@ -14,9 +14,9 @@ ERSCMU is a tool designed to help users keep their Elden Ring Seamless Coop mod 
 
 ## Installation
 
-1. Download the exe installer from the [Releases](https://github.com/FreemoX/ERSCMU/releases/latest) tab.
+1. Download the `ERSCMU.exe` installer from the [Releases](https://github.com/FreemoX/ERSCMU/releases/latest) tab.
 2. You don't have to download the `ERSCMU.py` file. The launcher grabs this by itself from the latest release.
-3. Run the installer and follow the on-screen instructions.
+3. Run the downloaded `ERSCMU.exe` installer and follow the on-screen instructions.
 
 ## Usage
 

@@ -64,6 +64,9 @@ Building the program yourself is a useful way of circumventing Windows Defender 
 3. Run `pyinstaller --onefile --noconsole --icon=logo.ico dynamic_launcher.py --name ERSCMU` from within the directory you placed the files in.
 4. You can now run the generated `ERSCMU.exe`. Enjoy not being pestered by false flags
 
+## Disclaimer
+ERSCMU is in no way affiliated with From Software, Elden Ring, or the Elden Ring Seamless Coop mod. This is just a personal project meant to provide a easy-to-use solution to manage the ERSC mod without having to edit files or mess with downloading and extracting files.
+
 ## Application Images
 ![Main Window](assets/main.png)
 ![Settings Window](assets/settings.png)

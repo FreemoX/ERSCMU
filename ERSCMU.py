@@ -885,6 +885,10 @@ def create_gui():
     )
     support_label.setOpenExternalLinks(True)
     support_label.setAlignment(Qt.AlignRight)
+    support_label.setToolTip(str(
+        f"Support LukeYui by downloading the mod at least once from Nexus Mods.\n"
+        f"Creators are rewarded for every time someone downloads their mod for\n"
+        f"the first time. You should only need to do this once to show your support!"))
 
     # Add info text and support label to the horizontal layout
     info_layout.addWidget(info_text)

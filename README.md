@@ -2,9 +2,8 @@
 
 ERSCMU is a tool designed to help users keep their Elden Ring Seamless Coop mod up-to-date automatically. Users can download the exe installer from the releases tab, which fetches updated code, so users don't have to update the application manually for every update.  
   
-_ERSCMU will **only update your mod**. If it's your first time installing Seamless Coop on your computer, you'll be prompted to [download the mod from Nexus Mods](https://www.nexusmods.com/eldenring/mods/510?tab=files).  
-You can then select the mod file in the program, which will install it for you. All subsequent updates are done automatically.  
-This was done in an effort to ensure the creator of Seamless Coop receives their Creator Rewards from Nexus Mods, since this is based on unique downloads (a users first time downloading a mod)._
+**First time installing Seamless Coop on your computer?**  
+_Read the [First Installation of Seamless Coop](https://github.com/FreemoX/ERSCMU/edit/main/README.md#first-installation-of-seamless-coop) section!_
 
 ## Features
 - Automatically checks for the latest version of the Elden Ring Seamless Coop mod.
@@ -42,6 +41,11 @@ This was done in an effort to ensure the creator of Seamless Coop receives their
 
 5. **Launching the Mod**:
     - Click on the `Launch Seamless Coop` button to start the mod with the configured settings.
+
+## First Installation of Seamless Coop  
+_ERSCMU will **only update your mod**. If it's your first time installing Seamless Coop on your computer, you'll be prompted to [download the mod from Nexus Mods](https://www.nexusmods.com/eldenring/mods/510?tab=files).  
+You can then select the mod file in the program, which will install it for you. All subsequent updates are done automatically.  
+This was done in an effort to ensure the creator of Seamless Coop receives their Creator Rewards from Nexus Mods, since this is based on unique downloads (a users first time downloading a mod)._
 
 ## Configuration Files
 

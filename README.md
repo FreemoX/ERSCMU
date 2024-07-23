@@ -31,6 +31,7 @@ _Read the [First Installation of Seamless Coop](#first-installation-of-seamless-
 2. **Initial Setup**:
     - On the first run, the application will check for updates automatically.
     - If the mod path is not detected, you can browse to the SeamlessCoop folder manually or use the auto-discover feature.
+    - If ERSCMU determines the mod is not installed, it'll prompt the user to download it. It can then be automatically installed.
 
 3. **Checking for Updates**:
     - Click on `Check for Updates` in the application menu or the main window to manually check for updates.

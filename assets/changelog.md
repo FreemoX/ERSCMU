@@ -1,3 +1,7 @@
+- ERSCMU 1.7.1.0
+  - Removed auto-download-install feature
+  - Added initial installation prompts
+  - added auto-install feature
 - ERSCMU 1.7.0.7
   - Added "Support the Creator" message in main window
   - Improved Stats Tooltip calculation

@@ -45,7 +45,7 @@ _Read the [First Installation of Seamless Coop](#first-installation-of-seamless-
 ## First Installation of Seamless Coop  
 _ERSCMU will **only update your mod**. If it's your first time installing Seamless Coop on your computer, you'll be prompted to [download the mod from Nexus Mods](https://www.nexusmods.com/eldenring/mods/510?tab=files).  
 You can then select the mod file in the program, which will install it for you. All subsequent updates are done automatically.  
-This was done in an effort to ensure the creator of Seamless Coop receives their Creator Rewards from Nexus Mods, since this is based on unique downloads (a users first time downloading a mod)._
+This was done in an effort to ensure the creator of Seamless Coop receives their Creator Rewards from Nexus Mods, since this is based on unique downloads (a users first time downloading the mod)._
 
 ## Configuration Files
 

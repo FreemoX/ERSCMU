@@ -1,23 +1,11 @@
-import os
-import sys
-import requests
-import importlib.util
-import zipfile
-import shutil
-import json
-from datetime import datetime
-import configparser
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QCheckBox, QComboBox, QDialog,
-    QMessageBox, QFileDialog, QToolTip
-)
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
-
 # Define version number
-PROGRAM_VERSION = "1.7.0.6"
+PROGRAM_VERSION = "1.7.0.7"
+
+# Default LAUNCHER_VERSION in case this script is run directly
+try:
+    LAUNCHER_VERSION
+except NameError:
+    LAUNCHER_VERSION = '9.9.9.9'
 
 # Define a persistent path for the configuration files in the AppData folder
 PERSISTENT_DIR = os.path.join(os.getenv('APPDATA'), 'ERSC Mod Updater')
@@ -54,12 +42,11 @@ DEFAULT_VALUES = {
 }
 FIRST_RUN = 1
 
-def check_logo():
+def check_logo(): # Download the ERSCMU logo if not found locally
     LOGO_URL = 'https://raw.githubusercontent.com/FreemoX/ERSCMU/main/assets/logo.ico'
     if not os.path.isfile(LOGO_PATH):
         response = requests.get(LOGO_URL, stream=True)
         if response.status_code == 200:
-            # Open the local file in write-binary mode
             with open(LOGO_PATH, 'wb') as file:
                 # Write the content in chunks to the local file
                 for chunk in response.iter_content(chunk_size=8192):
@@ -70,7 +57,7 @@ def check_logo():
     else:
         print(f"Logo discovered locally at {LOGO_PATH}")
 
-def get_changelog(num_entries=1):
+def get_changelog(num_entries=1): # Get changelog details. Defaults to last entry
     url = 'https://raw.githubusercontent.com/FreemoX/ERSCMU/main/assets/changelog.md'
     response = requests.get(url)
     if response.status_code != 200:
@@ -89,7 +76,7 @@ def get_changelog(num_entries=1):
     
     return '\n\n'.join(formatted_entries)
 
-def ensure_vocabulary(config):
+def ensure_vocabulary(config): # Defina a vocabulary for settings values
     if "vocabulary" not in config:
         config["vocabulary"] = {
             "GAMEPLAY": {
@@ -112,7 +99,7 @@ def ensure_vocabulary(config):
         }
     return config
 
-def ensure_settings(config):
+def ensure_settings(config): # Ensure setting sections exist
     if "settings" not in config:
         config["settings"] = {
             "GAMEPLAY": {},
@@ -122,10 +109,10 @@ def ensure_settings(config):
         }
     return config
 
-def camelcase(text):
+def camelcase(text): # Camelcase the given string
     return ' '.join([word.capitalize() for word in text.split('_')])
 
-def load_config():
+def load_config(): # Load the json config file
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'r') as f:
             config = json.load(f)
@@ -140,30 +127,30 @@ def load_config():
     config = ensure_settings(config)
     return config
 
-def save_config(config):
+def save_config(config): # Save to the json config file
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=4)
 
-def get_latest_release_info():
+def get_latest_release_info(): # Get info about the latest Seamless Coop version
     response = requests.get(GITHUB_API_URL)
     response.raise_for_status()
     return response.json()
 
-def get_installed_version(mod_path):
+def get_installed_version(mod_path): # Get the currently installed Seamless Coop version
     version_file = os.path.join(mod_path, 'version.txt')
     if os.path.exists(version_file):
         with open(version_file, 'r') as f:
             return f.read().strip()
     return ""
 
-def download_latest_release(download_url, dest_path):
+def download_latest_release(download_url, dest_path): # Download the latest Seamless Coop version
     response = requests.get(download_url, stream=True)
     response.raise_for_status()
     with open(dest_path, 'wb') as f:
         for chunk in response.iter_content(chunk_size=8192):
             f.write(chunk)
 
-def backup_old_mod(mod_path, installed_version, config):
+def backup_old_mod(mod_path, installed_version, config): # Backup mod before making changes
     backup_dir = PERSISTENT_DIR
     backup_path = os.path.join(backup_dir, f"ER-SC-{installed_version}.zip")
     with zipfile.ZipFile(backup_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -175,18 +162,18 @@ def backup_old_mod(mod_path, installed_version, config):
         if os.path.exists(launcher_path):
             zipf.write(launcher_path, os.path.basename(launcher_path))
 
-def extract_zip(zip_path, extract_to):
+def extract_zip(zip_path, extract_to): # Extract the downloaded zip file
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_to)
 
-def find_launcher(mod_path):
+def find_launcher(mod_path): # Return the path of the Seamless Coop executable
     for root, _, files in os.walk(os.path.dirname(mod_path)):
         for file in files:
             if file.endswith('.exe') and file != 'eldenring.exe' and file != 'start_protected_game.exe':
                 return file
     return None
 
-def merge_ini_files(old_ini, new_ini):
+def merge_ini_files(old_ini, new_ini): # Merge ini files in case of differences
     old_config = configparser.ConfigParser()
     old_config.read(old_ini)
     new_config = configparser.ConfigParser()
@@ -203,7 +190,7 @@ def merge_ini_files(old_ini, new_ini):
 
     return new_config
 
-def check_ini_files(mod_path):
+def check_ini_files(mod_path): # Compare old and new ini files
     old_ini = os.path.join(mod_path, INI_FILE)
     new_ini = os.path.join(mod_path, INI_FILE)
     if os.path.exists(old_ini) and os.path.exists(new_ini):
@@ -213,7 +200,7 @@ def check_ini_files(mod_path):
     elif os.path.exists(old_ini) and not os.path.exists(new_ini):
         shutil.copy(old_ini, new_ini)
 
-def update_mod(latest_version, download_url, release_info):
+def update_mod(latest_version, download_url, release_info): # Install the updated mod version
     config = load_config()
     mod_path = config["mod_path"]
     installed_version = get_installed_version(mod_path)
@@ -252,7 +239,7 @@ def update_mod(latest_version, download_url, release_info):
     except Exception as e:
         QMessageBox.critical(None, "Error", f"Update failed: {e}")
 
-def check_for_updates():
+def check_for_updates(): # Check if there exists a new version of Seamless Coop
     global FIRST_RUN
     config = load_config()
     mod_path = config["mod_path"]
@@ -275,7 +262,7 @@ def check_for_updates():
         if response == QMessageBox.Yes:
             update_mod(latest_version, download_url, release_info)
 
-def launch_mod():
+def launch_mod(): # Execute the Seamless Coop executable
     config = load_config()
     ini_path = os.path.join(config["mod_path"], INI_FILE)
     password = read_password_from_ini(ini_path)
@@ -284,7 +271,7 @@ def launch_mod():
         return
     os.startfile(BATCH_FILE)
 
-def browse_folder():
+def browse_folder(): # Function for manual mod directory
     folder_selected = QFileDialog.getExistingDirectory()
     if folder_selected:
         config = load_config()
@@ -297,19 +284,19 @@ def browse_folder():
         else:
             QMessageBox.critical(None, "Error", "Please select the SeamlessCoop folder.")
 
-def update_info_text():
+def update_info_text(): # Update the info text
     config = load_config()
     installed_version = config.get('installed_version', 'Unknown')
     last_updated = config.get('last_updated', 'Unknown')
     info_text.setText(f"Current Version: {installed_version}\nLast Updated: {last_updated}")
 
-def create_batch_script():
+def create_batch_script(): # Create the script to ensure the SC executable is properly launched
     config = load_config()
     launcher_path = os.path.join(os.path.dirname(config["mod_path"]), config['launcher_name'])
     with open(BATCH_FILE, 'w') as f:
         f.write(f'@echo off\ncd /d "{os.path.dirname(launcher_path)}"\nstart {config["launcher_name"]}\n')
 
-def read_password_from_ini(ini_path):
+def read_password_from_ini(ini_path): # Get the session password from the SC ini file
     if os.path.exists(ini_path):
         config_parser = configparser.ConfigParser()
         config_parser.read(ini_path)
@@ -317,7 +304,7 @@ def read_password_from_ini(ini_path):
             return config_parser.get('PASSWORD', 'cooppassword')
     return ""
 
-def save_password_to_ini(password, ini_path):
+def save_password_to_ini(password, ini_path): # Save the defined session password to the SC ini file
     if os.path.exists(ini_path):
         config_parser = configparser.ConfigParser()
         config_parser.read(ini_path)
@@ -327,7 +314,7 @@ def save_password_to_ini(password, ini_path):
         with open(ini_path, 'w') as configfile:
             config_parser.write(configfile)
 
-def save_password():
+def save_password(): # Check and initiate the saving of the session password
     new_password = password_entry.text()
     if not new_password:
         QMessageBox.critical(None, "Error", "Session password cannot be empty.")
@@ -336,7 +323,7 @@ def save_password():
     ini_path = os.path.join(config["mod_path"], INI_FILE)
     save_password_to_ini(new_password, ini_path)
 
-def toggle_password():
+def toggle_password(): # Toggle session password visibility
     if password_entry.echoMode() == QLineEdit.Normal:
         password_entry.setEchoMode(QLineEdit.Password)
         toggle_button.setText('Show')
@@ -344,13 +331,13 @@ def toggle_password():
         password_entry.setEchoMode(QLineEdit.Normal)
         toggle_button.setText('Hide')
 
-def get_locale_options(mod_path):
+def get_locale_options(mod_path): # Get the languages available to SC
     locale_path = os.path.join(mod_path, 'locale')
     if not os.path.exists(locale_path):
         return ["Default"]
     return ["Default"] + [os.path.splitext(f)[0].capitalize() for f in os.listdir(locale_path) if f.endswith('.json')]
 
-def auto_discover_mod_path():
+def auto_discover_mod_path(): # Auto-discover the mod directory. Currently steam-only!
     QMessageBox.information(None, "Auto-Discovery", "Auto-discovery might take a few minutes. Please wait...")
 
     drives = [f"{chr(letter)}:\\" for letter in range(65, 91) if os.path.exists(f"{chr(letter)}:\\")]
@@ -411,7 +398,7 @@ def auto_discover_mod_path():
         QMessageBox.critical(None, "Auto-Discovery Failed", "Failed to auto-discover the mod path. Please select it manually.")
         browse_folder()
 
-def install_mod(elden_ring_path):
+def install_mod(elden_ring_path): # Initiate the installation of the updated SC version
     try:
         release_info = get_latest_release_info()
         latest_version = release_info['tag_name']
@@ -447,7 +434,21 @@ def install_mod(elden_ring_path):
     except Exception as e:
         QMessageBox.critical(None, "Error", f"Installation failed: {e}")
 
-def open_settings_window():
+def beautify_tt(ex_int, val):
+    # Calculate HP for 2, 3, and 4 players
+    tt_example_2 = ex_int * (1 + int(val) / 100)
+    tt_example_3 = ex_int * (1 + 2 * int(val) / 100)
+    tt_example_4 = ex_int * (1 + 3 * int(val) / 100)
+    
+    # Format numbers with space as thousand separator and no decimals
+    tt_example_1_formatted = f"{int(ex_int):,}".replace(",", " ")
+    tt_example_2_formatted = f"{int(tt_example_2):,}".replace(",", " ")
+    tt_example_3_formatted = f"{int(tt_example_3):,}".replace(",", " ")
+    tt_example_4_formatted = f"{int(tt_example_4):,}".replace(",", " ")
+
+    return tt_example_1_formatted, tt_example_2_formatted, tt_example_3_formatted, tt_example_4_formatted
+
+def open_settings_window(): # Generate the Settings GUI window
     try:
         settings_window = QDialog()
         settings_window.setWindowTitle("Settings")
@@ -624,135 +625,69 @@ def open_settings_window():
                     reset_button.clicked.connect(lambda e=entry, dv=default_value: e.setText(dv))
                     settings_grid.addWidget(reset_button, row, 2, 1, 1)
                     if key == 'enemy_health_scaling':
-                        tt_example_1 = 346  # Vulgar Militiamen (Liurnia) Example
-                        # Calculate HP for 2, 3, and 4 players
-                        tt_example_2 = tt_example_1 * (1 + int(value) / 100)
-                        tt_example_3 = tt_example_1 * (1 + 2 * int(value) / 100)
-                        tt_example_4 = tt_example_1 * (1 + 3 * int(value) / 100)
-                        
-                        # Format numbers with space as thousand separator and no decimals
-                        tt_example_1_formatted = f"{int(tt_example_1):,}".replace(",", " ")
-                        tt_example_2_formatted = f"{int(tt_example_2):,}".replace(",", " ")
-                        tt_example_3_formatted = f"{int(tt_example_3):,}".replace(",", " ")
-                        tt_example_4_formatted = f"{int(tt_example_4):,}".replace(",", " ")
-                        
+                        tt1, tt2, tt3, tt4 = beautify_tt(346, value) # Vulgar Militiamen (Liurnia) Example
                         tooltip_text = (
                             f"Percentage increase of enemy non-boss HP per player.\n\n"
                             f"Vulgar Militiamen (Liurnia) example with a {int(value)}% scaling:\n"
-                            f"Enemy HP with 1 player: {tt_example_1_formatted}\n"
-                            f"Enemy HP with 2 players: {tt_example_2_formatted}\n"
-                            f"Enemy HP with 3 players: {tt_example_3_formatted}\n"
-                            f"Enemy HP with 4 players: {tt_example_4_formatted}"
+                            f"Enemy HP with 1 player: {tt1}\n"
+                            f"Enemy HP with 2 players: {tt2}\n"
+                            f"Enemy HP with 3 players: {tt3}\n"
+                            f"Enemy HP with 4 players: {tt4}"
                         )
                         entry.setToolTip(str(tooltip_text))
                     elif key == 'enemy_damage_scaling':
-                        tt_example_1 = 130  # Vulgar Militiamen (Liurnia) Example
-                        # Calculate damage for 2, 3, and 4 players
-                        tt_example_2 = tt_example_1 * (1 + int(value) / 100)
-                        tt_example_3 = tt_example_1 * (1 + 2 * int(value) / 100)
-                        tt_example_4 = tt_example_1 * (1 + 3 * int(value) / 100)
-                        
-                        # Format numbers with space as thousand separator and no decimals
-                        tt_example_1_formatted = f"{int(tt_example_1):,}".replace(",", " ")
-                        tt_example_2_formatted = f"{int(tt_example_2):,}".replace(",", " ")
-                        tt_example_3_formatted = f"{int(tt_example_3):,}".replace(",", " ")
-                        tt_example_4_formatted = f"{int(tt_example_4):,}".replace(",", " ")
-                        
+                        tt1, tt2, tt3, tt4 = beautify_tt(130, value) # Vulgar Militiamen (Liurnia) Example
                         tooltip_text = (
                             f"Percentage increase of enemy non-boss damage potential per player.\n\n"
                             f"Vulgar Militiamen (Liurnia) example with a {int(value)}% scaling:\n"
-                            f"Enemy Damage with 1 player: {tt_example_1_formatted}\n"
-                            f"Enemy Damage with 2 players: {tt_example_2_formatted}\n"
-                            f"Enemy Damage with 3 players: {tt_example_3_formatted}\n"
-                            f"Enemy Damage with 4 players: {tt_example_4_formatted}"
+                            f"Enemy Damage with 1 player: {tt1}\n"
+                            f"Enemy Damage with 2 players: {tt2}\n"
+                            f"Enemy Damage with 3 players: {tt3}\n"
+                            f"Enemy Damage with 4 players: {tt4}"
                         )
                         entry.setToolTip(str(tooltip_text))
                     elif key == 'enemy_posture_scaling':
-                        tt_example_1 = 30  # Vulgar Militiamen (Liurnia) Example
-                        # Calculate Poise for 2, 3, and 4 players
-                        tt_example_2 = tt_example_1 * (1 + int(value) / 100)
-                        tt_example_3 = tt_example_1 * (1 + 2 * int(value) / 100)
-                        tt_example_4 = tt_example_1 * (1 + 3 * int(value) / 100)
-                        
-                        # Format numbers with space as thousand separator and no decimals
-                        tt_example_1_formatted = f"{int(tt_example_1):,}".replace(",", " ")
-                        tt_example_2_formatted = f"{int(tt_example_2):,}".replace(",", " ")
-                        tt_example_3_formatted = f"{int(tt_example_3):,}".replace(",", " ")
-                        tt_example_4_formatted = f"{int(tt_example_4):,}".replace(",", " ")
-                        
+                        tt1, tt2, tt3, tt4 = beautify_tt(30, value) # Vulgar Militiamen (Liurnia) Example
                         tooltip_text = (
                             f"Percentage increase of enemy non-boss Posture/Poise (stun resistance) per player.\n\n"
                             f"Vulgar Militiamen (Liurnia) example with a {int(value)}% scaling:\n"
-                            f"Enemy Poise with 1 player: {tt_example_1_formatted}\n"
-                            f"Enemy Poise with 2 players: {tt_example_2_formatted}\n"
-                            f"Enemy Poise with 3 players: {tt_example_3_formatted}\n"
-                            f"Enemy Poise with 4 players: {tt_example_4_formatted}"
+                            f"Enemy Poise with 1 player: {tt1}\n"
+                            f"Enemy Poise with 2 players: {tt2}\n"
+                            f"Enemy Poise with 3 players: {tt3}\n"
+                            f"Enemy Poise with 4 players: {tt4}"
                         )
                         entry.setToolTip(str(tooltip_text))
                     elif key == 'boss_health_scaling':
-                        tt_example_1 = 6080  # Godrick The Grafted HP Example
-                        # Calculate HP for 2, 3, and 4 players
-                        tt_example_2 = tt_example_1 * (1 + int(value) / 100)
-                        tt_example_3 = tt_example_1 * (1 + 2 * int(value) / 100)
-                        tt_example_4 = tt_example_1 * (1 + 3 * int(value) / 100)
-                        
-                        # Format numbers with space as thousand separator and no decimals
-                        tt_example_1_formatted = f"{int(tt_example_1):,}".replace(",", " ")
-                        tt_example_2_formatted = f"{int(tt_example_2):,}".replace(",", " ")
-                        tt_example_3_formatted = f"{int(tt_example_3):,}".replace(",", " ")
-                        tt_example_4_formatted = f"{int(tt_example_4):,}".replace(",", " ")
-                        
+                        tt1, tt2, tt3, tt4 = beautify_tt(6080, value) # Godrick The Grafted HP Example
                         tooltip_text = (
                             f"Percentage increase of enemy boss HP per player.\n\n"
                             f"Godrick The Grafted example with a {int(value)}% scaling:\n"
-                            f"Boss HP with 1 player: {tt_example_1_formatted}\n"
-                            f"Boss HP with 2 players: {tt_example_2_formatted}\n"
-                            f"Boss HP with 3 players: {tt_example_3_formatted}\n"
-                            f"Boss HP with 4 players: {tt_example_4_formatted}"
+                            f"Boss HP with 1 player: {tt1}\n"
+                            f"Boss HP with 2 players: {tt2}\n"
+                            f"Boss HP with 3 players: {tt3}\n"
+                            f"Boss HP with 4 players: {tt4}"
                         )
                         entry.setToolTip(str(tooltip_text))
                     elif key == 'boss_damage_scaling':
-                        tt_example_1 = 200  # Godrick The Grafted Damage Example
-                        # Calculate Damage for 2, 3, and 4 players
-                        tt_example_2 = tt_example_1 * (1 + int(value) / 100)
-                        tt_example_3 = tt_example_1 * (1 + 2 * int(value) / 100)
-                        tt_example_4 = tt_example_1 * (1 + 3 * int(value) / 100)
-                        
-                        # Format numbers with space as thousand separator and no decimals
-                        tt_example_1_formatted = f"{int(tt_example_1):,}".replace(",", " ")
-                        tt_example_2_formatted = f"{int(tt_example_2):,}".replace(",", " ")
-                        tt_example_3_formatted = f"{int(tt_example_3):,}".replace(",", " ")
-                        tt_example_4_formatted = f"{int(tt_example_4):,}".replace(",", " ")
-                        
+                        tt1, tt2, tt3, tt4 = beautify_tt(200, value) # Godrick The Grafted Damage Example
                         tooltip_text = (
                             f"Percentage increase of enemy boss damage potential per player.\n\n"
                             f"Godrick The Grafted example with a {int(value)}% scaling:\n"
-                            f"Boss Example Damage with 1 player: {tt_example_1_formatted}\n"
-                            f"Boss Example Damage with 2 players: {tt_example_2_formatted}\n"
-                            f"Boss Example Damage with 3 players: {tt_example_3_formatted}\n"
-                            f"Boss Example Damage with 4 players: {tt_example_4_formatted}"
+                            f"Boss Example Damage with 1 player: {tt1}\n"
+                            f"Boss Example Damage with 2 players: {tt2}\n"
+                            f"Boss Example Damage with 3 players: {tt3}\n"
+                            f"Boss Example Damage with 4 players: {tt4}"
                         )
                         entry.setToolTip(str(tooltip_text))
                     elif key == 'boss_posture_scaling':
-                        tt_example_1 = 105  # Godrick The Grafted Poise Example
-                        # Calculate Poise for 2, 3, and 4 players
-                        tt_example_2 = tt_example_1 * (1 + int(value) / 100)
-                        tt_example_3 = tt_example_1 * (1 + 2 * int(value) / 100)
-                        tt_example_4 = tt_example_1 * (1 + 3 * int(value) / 100)
-                        
-                        # Format numbers with space as thousand separator and no decimals
-                        tt_example_1_formatted = f"{int(tt_example_1):,}".replace(",", " ")
-                        tt_example_2_formatted = f"{int(tt_example_2):,}".replace(",", " ")
-                        tt_example_3_formatted = f"{int(tt_example_3):,}".replace(",", " ")
-                        tt_example_4_formatted = f"{int(tt_example_4):,}".replace(",", " ")
-                        
+                        tt1, tt2, tt3, tt4 = beautify_tt(105, value) # Godrick The Grafted Poise Example
                         tooltip_text = (
                             f"Percentage increase of enemy boss Posture/Poise (stun resistance) per player.\n\n"
                             f"Godrick The Grafted example with a {int(value)}% scaling:\n"
-                            f"Boss Poise with 1 player: {tt_example_1_formatted}\n"
-                            f"Boss Poise with 2 players: {tt_example_2_formatted}\n"
-                            f"Boss Poise with 3 players: {tt_example_3_formatted}\n"
-                            f"Boss Poise with 4 players: {tt_example_4_formatted}"
+                            f"Boss Poise with 1 player: {tt1}\n"
+                            f"Boss Poise with 2 players: {tt2}\n"
+                            f"Boss Poise with 3 players: {tt3}\n"
+                            f"Boss Poise with 4 players: {tt4}"
                         )
                         entry.setToolTip(str(tooltip_text))
                 row += 1
@@ -768,7 +703,7 @@ def open_settings_window():
     except Exception as e:
         print(f"Error in open_settings_window: {e}")
 
-def save_settings_to_json(config, config_parser):
+def save_settings_to_json(config, config_parser): # Save settings to the ERSCMU json config file
     for section in config_parser.sections():
         if section not in config["settings"]:
             config["settings"][section] = {}
@@ -776,7 +711,7 @@ def save_settings_to_json(config, config_parser):
             config["settings"][section][key] = value
     save_config(config)
 
-def verify_settings(config_parser, config):
+def verify_settings(config_parser, config): # Verify settings values
     temp_config = {}
     for section in config_parser.sections():
         temp_config[section] = {}
@@ -863,7 +798,6 @@ def create_gui():
     main_layout = QVBoxLayout(central_widget)
 
     # Set application icon
-    #app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logo.ico')))
     app.setWindowIcon(QtGui.QIcon(LOGO_PATH))
 
     menu_bar = main_window.menuBar()
@@ -941,11 +875,27 @@ def create_gui():
     info_text.setToolTip(str("Seamless Coop version and install date"))
     update_info_text()
 
+    # Create a horizontal layout for the info text and support label
+    info_layout = QHBoxLayout()
+
+    # Create the support label
+    support_label = QLabel(
+        'Support the creator of Seamless Coop by<br>downloading the mod at least once from '
+        '<a href="https://www.nexusmods.com/eldenring/mods/510?tab=files">here</a>!'
+    )
+    support_label.setOpenExternalLinks(True)
+    support_label.setAlignment(Qt.AlignRight)
+
+    # Add info text and support label to the horizontal layout
+    info_layout.addWidget(info_text)
+    info_layout.addStretch()  # Add stretch to push the support_label to the right
+    info_layout.addWidget(support_label)
+
     main_layout.addLayout(mod_path_layout)
     main_layout.addWidget(check_updates_button)
     main_layout.addLayout(password_layout)
     main_layout.addWidget(launch_button)
-    main_layout.addWidget(info_text)
+    main_layout.addLayout(info_layout)  # Add the horizontal layout to the main layout
 
     central_widget.setLayout(main_layout)
     main_window.setCentralWidget(central_widget)

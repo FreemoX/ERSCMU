@@ -1,3 +1,7 @@
+- ERSCMU 1.7.0.7
+  - Added "Support the Creator" message in main window
+  - Improved Stats Tooltip calculation
+  - Added fallback value to launcher version
 - Launcher 1.1.0.1
   - Launcher now fetches latest release ERSCMU.py code instead of from Main branch
   - Versioning of launcher and script is now separated for clarity

@@ -3,7 +3,7 @@
 ERSCMU is a tool designed to help users keep their Elden Ring Seamless Coop mod up-to-date automatically. Users can download the exe installer from the releases tab, which fetches updated code, so users don't have to update the application manually for every update.  
   
 **First time installing Seamless Coop on your computer?**  
-_Read the [First Installation of Seamless Coop](https://github.com/FreemoX/ERSCMU/tree/main#first-installation-of-seamless-coop) section!_
+_Read the [First Installation of Seamless Coop](#first-installation-of-seamless-coop) section!_
 
 ## Features
 - Automatically checks for the latest version of the Elden Ring Seamless Coop mod.

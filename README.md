@@ -9,7 +9,7 @@ _Read the [First Installation of Seamless Coop](#first-installation-of-seamless-
 - Automatically checks for the latest version of the Elden Ring Seamless Coop mod.
 - Downloads and installs updates automatically.
 - Backs up the previous version before updating.
-- Allows configuration of mod settings through a GUI.
+- Allows configuration of mod settings through a [GUI](#application-images).
 - Auto-discovers the mod installation path.
 - Saves settings persistently in the AppData folder.
 - Runs Seamless Coop properly, resolves the "Inappropriate Activity Detected" error.

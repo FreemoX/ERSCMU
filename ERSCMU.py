@@ -1,5 +1,5 @@
 # Define version number
-PROGRAM_VERSION = "1.7.0.7"
+PROGRAM_VERSION = "1.7.1.0"
 
 # Default LAUNCHER_VERSION in case this script is run directly
 try:
@@ -76,7 +76,7 @@ def get_changelog(num_entries=1): # Get changelog details. Defaults to last entr
     
     return '\n\n'.join(formatted_entries)
 
-def ensure_vocabulary(config): # Defina a vocabulary for settings values
+def ensure_vocabulary(config): # Define a vocabulary for settings values
     if "vocabulary" not in config:
         config["vocabulary"] = {
             "GAMEPLAY": {
@@ -245,6 +245,20 @@ def check_for_updates(): # Check if there exists a new version of Seamless Coop
     mod_path = config["mod_path"]
     installed_version = get_installed_version(mod_path)
     
+    if not os.path.exists(mod_path):
+        QMessageBox.information(None, "Mod Not Found", "The Seamless Coop mod is not installed. Please download it from the Nexus Mods page and place it in your Downloads folder. Once downloaded, click OK to select the file for installation.")
+        file_dialog = QFileDialog()
+        zip_file, _ = file_dialog.getOpenFileName(None, "Select Seamless Coop Mod Zip File", os.path.expanduser('~/Downloads'), "Zip Files (*.zip)")
+        if zip_file:
+            try:
+                with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                    zip_ref.extractall(os.path.dirname(mod_path))
+                QMessageBox.information(None, "Installation Complete", "The Seamless Coop mod has been installed successfully.")
+            except Exception as e:
+                QMessageBox.critical(None, "Error", f"Installation failed: {e}")
+        else:
+            return
+
     try:
         release_info = get_latest_release_info()
         latest_version = release_info['tag_name']
@@ -336,103 +350,6 @@ def get_locale_options(mod_path): # Get the languages available to SC
     if not os.path.exists(locale_path):
         return ["Default"]
     return ["Default"] + [os.path.splitext(f)[0].capitalize() for f in os.listdir(locale_path) if f.endswith('.json')]
-
-def auto_discover_mod_path(): # Auto-discover the mod directory. Currently steam-only!
-    QMessageBox.information(None, "Auto-Discovery", "Auto-discovery might take a few minutes. Please wait...")
-
-    drives = [f"{chr(letter)}:\\" for letter in range(65, 91) if os.path.exists(f"{chr(letter)}:\\")]
-    potential_paths = []
-
-    # First, check Program Files directories
-    program_files_dirs = []
-    for drive in drives:
-        program_files_dirs.extend([
-            os.path.join(drive, 'Program Files', 'Steam'),
-            os.path.join(drive, 'Program Files (x86)', 'Steam')
-        ])
-
-    for dir in program_files_dirs:
-        if os.path.exists(dir):
-            for root, dirs, files in os.walk(dir):
-                if 'steamapps' in dirs:
-                    steamapps_path = os.path.join(root, 'steamapps')
-                    elden_ring_path = os.path.join(steamapps_path, 'common', 'ELDEN RING', 'Game')
-                    if os.path.exists(elden_ring_path):
-                        if not os.path.exists(os.path.join(elden_ring_path, 'SeamlessCoop')):
-                            response = QMessageBox.question(None, "Mod Not Found", f"SeamlessCoop mod not found in {elden_ring_path}. Do you want to install the mod?", QMessageBox.Yes | QMessageBox.No)
-                            if response == QMessageBox.Yes:
-                                install_mod(elden_ring_path)
-                        else:
-                            potential_paths.append(os.path.join(elden_ring_path, 'SeamlessCoop'))
-                    dirs[:] = []  # Stop further recursion
-
-    if not potential_paths:
-        # Check other directories
-        for drive in drives:
-            for root, dirs, files in os.walk(drive):
-                if len(root.split(os.sep)) - 1 > 5:  # Limit to 5 directories deep
-                    dirs[:] = []  # Don't recurse any deeper
-                    continue
-                if 'steamapps' in dirs:
-                    steamapps_path = os.path.join(root, 'steamapps')
-                    elden_ring_path = os.path.join(steamapps_path, 'common', 'ELDEN RING', 'Game')
-                    if os.path.exists(elden_ring_path):
-                        if not os.path.exists(os.path.join(elden_ring_path, 'SeamlessCoop')):
-                            response = QMessageBox.question(None, "Mod Not Found", f"SeamlessCoop mod not found in {elden_ring_path}. Do you want to install the mod?", QMessageBox.Yes | QMessageBox.No)
-                            if response == QMessageBox.Yes:
-                                install_mod(elden_ring_path)
-                        else:
-                            potential_paths.append(os.path.join(elden_ring_path, 'SeamlessCoop'))
-                    dirs[:] = []  # Stop further recursion
-
-    if potential_paths:
-        mod_path = potential_paths[0]
-        config = load_config()
-        config["mod_path"] = mod_path
-        save_config(config)
-        mod_path_entry.setText(mod_path)
-        create_batch_script()
-        update_info_text()
-        QMessageBox.information(None, "Auto-Discovery Complete", f"Mod path set to: {mod_path}")
-    else:
-        QMessageBox.critical(None, "Auto-Discovery Failed", "Failed to auto-discover the mod path. Please select it manually.")
-        browse_folder()
-
-def install_mod(elden_ring_path): # Initiate the installation of the updated SC version
-    try:
-        release_info = get_latest_release_info()
-        latest_version = release_info['tag_name']
-        download_url = next(asset['browser_download_url'] for asset in release_info['assets'] if asset['name'].endswith('.zip'))
-
-        zip_path = os.path.join(PERSISTENT_DIR, 'SeamlessCoop.zip')
-        download_latest_release(download_url, zip_path)
-
-        extract_zip(zip_path, elden_ring_path)
-        os.remove(zip_path)
-
-        mod_path = os.path.join(elden_ring_path, 'SeamlessCoop')
-        config = load_config()
-        config["mod_path"] = mod_path
-        save_config(config)
-
-        new_launcher = find_launcher(mod_path)
-        if new_launcher:
-            config['launcher_name'] = new_launcher
-
-        with open(os.path.join(mod_path, 'version.txt'), 'w') as f:
-            f.write(latest_version)
-
-        config['installed_version'] = latest_version
-        config['last_updated'] = datetime.strptime(release_info['published_at'], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
-        save_config(config)
-
-        check_ini_files(mod_path)
-        apply_saved_settings_to_ini(mod_path)
-        create_batch_script()
-        update_info_text()
-        QMessageBox.information(None, "Installation Complete", f"Installed version {latest_version}.")
-    except Exception as e:
-        QMessageBox.critical(None, "Error", f"Installation failed: {e}")
 
 def beautify_tt(ex_int, val):
     # Calculate HP for 2, 3, and 4 players
@@ -835,9 +752,6 @@ def create_gui():
     browse_button = QPushButton("Browse")
     browse_button.setToolTip(str("Manually select the Seamless Coop mod folder"))
     browse_button.clicked.connect(browse_folder)
-    auto_button = QPushButton("Auto")
-    auto_button.setToolTip(str("Automatically discover the Seamless Coop mod folder"))
-    auto_button.clicked.connect(auto_discover_mod_path)
 
     config = load_config()
     mod_path_entry.setText(config["mod_path"])
@@ -846,7 +760,6 @@ def create_gui():
     mod_path_layout.addWidget(mod_path_label)
     mod_path_layout.addWidget(mod_path_entry)
     mod_path_layout.addWidget(browse_button)
-    mod_path_layout.addWidget(auto_button)
 
     check_updates_button = QPushButton("Check for Updates")
     check_updates_button.setToolTip(str("Manually check for new mod updates"))

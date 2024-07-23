@@ -11,6 +11,7 @@ ERSCMU is a tool designed to help users keep their Elden Ring Seamless Coop mod 
 - Saves settings persistently in the AppData folder.
 - Runs Seamless Coop properly, resolves the "Inappropriate Activity Detected" error.
 - Allows for automatic Vanilla -> Mod save file conversion
+- Offers informative tooltips, including a scaling calculator
 
 ## Installation
 

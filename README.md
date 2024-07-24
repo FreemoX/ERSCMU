@@ -80,6 +80,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ERSCMU is in no way affiliated with From Software, Elden Ring, or the Elden Ring Seamless Coop mod. This is just a personal project meant to provide a easy-to-use solution to manage the ERSC mod without having to edit files or mess with downloading and extracting files.
 
 ## Application Images
+_Note that these screenshots likely will not represent future versions of ERSCMU as the GUI, features, and design choices may change in newer versions_
 ![Main Window](assets/main.png)
 ![Settings Window](assets/settings.png)
 ![Update Confirmation](assets/update_confirmation.png)

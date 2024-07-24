@@ -10,7 +10,6 @@ _Read the [First Installation of Seamless Coop](#first-installation-of-seamless-
 - Downloads and installs updates automatically.
 - Backs up the previous version before updating.
 - Allows configuration of mod settings through a [GUI](#application-images).
-- Auto-discovers the mod installation path.
 - Saves settings persistently in the AppData folder.
 - Runs Seamless Coop properly, resolves the "Inappropriate Activity Detected" error.
 - Allows for automatic Vanilla -> Mod save file conversion.

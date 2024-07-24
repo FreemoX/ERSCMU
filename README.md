@@ -61,7 +61,8 @@ Building the program yourself is a useful way of circumventing Windows Defender 
 
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.  
-This project is in no way affiliated with the creators of Elden Ring or the creator of the Seamless Coop mod.
+This project is in no way affiliated with the creators of Elden Ring or the creator of the Seamless Coop mod.  
+Please feel free to check out our [to-do list](assets/todo.md) for a list of planned changes.
 
 ## License
 

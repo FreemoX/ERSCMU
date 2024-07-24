@@ -19,7 +19,7 @@ _Read the [First Installation of Seamless Coop](#first-installation-of-seamless-
 
 1. Download the `ERSCMU.exe` installer from the [Releases](https://github.com/FreemoX/ERSCMU/releases/latest) tab.  
    *You don't have to download the `ERSCMU.py` file. The launcher grabs this by itself from the latest release.*  
-   _**Alternatively**, you can [build](https://github.com/FreemoX/ERSCMU?tab=readme-ov-file#building) the executable yourself to avoid issues with Windows Defender and anti virus software._
+   _**Alternatively**, you can [build](#building) the executable yourself to avoid issues with Windows Defender and anti virus software._
 3. Run the downloaded `ERSCMU.exe` installer and follow the on-screen instructions.
 
 ## Usage
@@ -52,6 +52,17 @@ This was done in an effort to ensure the creator of Seamless Coop receives their
 - Configuration files are stored in the AppData folder: `C:\Users\<Your Username>\AppData\Roaming\ERSC Mod Updater`
 - The main configuration file is `mod_updater_config.json`.
 
+## Building
+Building the program yourself is a useful way of circumventing Windows Defender and antiviruses flagging ERSCMU as a virus.
+1. Download [dynamic_launcher.py](dynamic_launcher.py) and [ERSCMU logo](assets/logo.ico) into a build directory (eg. `Documents\ERSCMU`).
+2. Run `pip install requests PyQt5 pyinstaller` to install dependancies.
+3. Run `pyinstaller --onefile --noconsole --icon=logo.ico dynamic_launcher.py --name ERSCMU` from within the directory you placed the files in.
+4. You can now run the generated `ERSCMU.exe`. Enjoy not being pestered by false flags
+
+## Contributing
+Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.  
+This project is in no way affiliated with the creators of Elden Ring or the creator of the Seamless Coop mod.
+
 ## License
 
 ```
@@ -63,17 +74,6 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
-
-## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.  
-This project is in no way affiliated with the creators of Elden Ring or the creator of the Seamless Coop mod.
-
-## Building
-Building the program yourself is a useful way of circumventing Windows Defender and antiviruses flagging ERSCMU as a virus.
-1. Download [dynamic_launcher.py](dynamic_launcher.py) and [ERSCMU logo](assets/logo.ico) into a build directory (eg. `Documents\ERSCMU`).
-2. Run `pip install requests PyQt5 pyinstaller` to install dependancies.
-3. Run `pyinstaller --onefile --noconsole --icon=logo.ico dynamic_launcher.py --name ERSCMU` from within the directory you placed the files in.
-4. You can now run the generated `ERSCMU.exe`. Enjoy not being pestered by false flags
 
 ## Disclaimer
 ERSCMU is in no way affiliated with From Software, Elden Ring, or the Elden Ring Seamless Coop mod. This is just a personal project meant to provide a easy-to-use solution to manage the ERSC mod without having to edit files or mess with downloading and extracting files.
